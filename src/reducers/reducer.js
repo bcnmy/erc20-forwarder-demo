@@ -17,6 +17,7 @@ function reducer(state, action) {
               transferAmount:"",
               transferFee:"",
               transferDestination:"",
+              transferTx:null,
               txHash:""
           }
 
@@ -96,13 +97,15 @@ function reducer(state, action) {
                 transferAmount:action.amount,
                 transferFee:action.fee,
                 transferDestination:action.to,
+                transferTx:action.tx,
                 txModal:true
             }
 
         case 'CANCEL_TX_MODAL' :
             return {
                 ...state,
-                txModal:false
+                txModal:false,
+                transferTx:null
             }
 
         case 'TX_HASH':

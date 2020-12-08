@@ -19,11 +19,11 @@ function TokenSend({store,dispatch}){
 
     useInterval(updateBalance,4000);
 
+    // This method calls tokenWallet.buildTransferTx
     const onSubmit = async(data) => {
         console.log("submitted");
-        const fee = parseFloat(ethers.utils.formatEther(await store.tokenWallet.estimateTransferCost(data.to,data.amount))).toFixed(2);
-        console.log("fee : " + fee);
-        dispatch({type:'PROPOSE_TX',amount:data.amount, fee:fee, to:data.to});
+        const {tx,fee} = await store.tokenWallet.buildTransferTx(data.to,data.amount);
+        dispatch({type:'PROPOSE_TX',amount:data.amount, fee:fee, to:data.to, tx:tx});
     }
     
     const approveFeeProxy = async() => {

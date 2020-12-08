@@ -1,7 +1,7 @@
 import Header from './components/Header';
 import TokenSend from './components/TokenSend';
 import reducer from './reducers/reducer';
-import Token from './utils/TokenWallet';
+import TokenWallet from './utils/TokenWallet';
 import web3Modal from './utils/web3Modal';
 import { ThemeProvider, CSSReset, Box, Text, Button, Heading} from '@chakra-ui/core';
 import { ethers } from "ethers";
@@ -29,6 +29,7 @@ function App() {
     txHash:""
 });
 
+  //This function calls builds the state when the user "logs in"
   const headerButtonFunction = async() => {
     if (store.loggedIn){
       console.log(store);
@@ -40,7 +41,8 @@ function App() {
         const provider = new ethers.providers.Web3Provider(walletModal);
         const wallet = provider.getSigner();
         const address = await wallet.getAddress();
-        const tokenWallet = new Token(provider);
+        //note that the "token wallet factory method accepts a web3 provider"
+        const tokenWallet = TokenWallet.factory(walletModal);
         const balance = (parseFloat((await tokenWallet.token.balanceOf(address)).toString())/(Math.pow(10,18))).toFixed(2);
         const transferHandlerApproved = await tokenWallet.transferHandlerApproved(address);
         const feeProxyApproved = await tokenWallet.feeProxyApproved(address);
@@ -65,11 +67,12 @@ function App() {
     dispatch({type:'CANCEL_TX_MODAL'})
   }
 
+  // This method calls the tokenWallet to send the Tx
   const submitTx = async() => {
     dispatch({type:'CANCEL_TX_MODAL'});
     dispatch({type:'LOADING'});
     try{
-      const txHash = await store.tokenWallet.forwardTransfer(ethers.utils.parseEther(store.transferAmount),store.transferDestination);
+      const txHash = await store.tokenWallet.sendTransferTx(store.transferTx);
       const newBalance = (parseFloat((await store.tokenWallet.token.balanceOf(store.address)).toString())/(Math.pow(10,18))).toFixed(2);
       console.log(txHash);
       dispatch({type:'UPDATE_BALANCE',tokenBalance:newBalance});
