@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@biconomy/mexa": "^1.5.10",
     "@chakra-ui/core": "^0.8.0",
     "@chakra-ui/icons": "^1.0.1",
     "@chakra-ui/react": "^1.0.1",
