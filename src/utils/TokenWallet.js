@@ -85,16 +85,16 @@ class TokenWallet{
        
     }
 
-    async transferHandlerApproved(){
-        const allowance = await this.token.allowance(await this.wallet.getAddress(),transferHandlerAddress);
+    async transferHandlerApproved(address){
+        const allowance = await this.token.allowance(address,transferHandlerAddress);
         if (allowance > 0)
             return true;
         else
             return false;
     }
 
-    async feeProxyApproved(){
-        const allowance = await this.token.allowance(await this.wallet.getAddress(),feeProxyAddress);
+    async feeProxyApproved(address){
+        const allowance = await this.token.allowance(address,feeProxyAddress);
         if (allowance > 0)
             return true;
         else
@@ -106,11 +106,13 @@ class TokenWallet{
     }
 
     async permitFeeProxy(){
-        await this.permitClient.daiPermit(daiDomainData,feeProxyAddress,(Date.now()/1000)+600,true);
+        const address = await this.wallet.getAddress();
+        const nonce = await this.token.nonces(address);
+        await this.permitClient.daiPermit(daiDomainData,nonce,feeProxyAddress,Math.floor(Date.now() / 1000 + 3600),true);
     }
 
     async permitTransferHandler(){ //replace call with dai permit
-        await this.permitClient.daiPermit(daiDomainData,transferHandlerAddress,(Date.now()/1000)+600,true);
+        await this.permitClient.daiPermit(daiDomainData,transferHandlerAddress,Math.floor(Date.now() / 1000 + 3600),true);
     }
 
     //(await transferHandler.estimateGas.transfer(tokenAddress,to,amount)

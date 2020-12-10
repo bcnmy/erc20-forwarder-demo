@@ -33,7 +33,7 @@ function TokenSend({store,dispatch}){
     const approveFeeProxy = async() => {
         dispatch({type:'LOADING'});
         try{
-            await store.tokenWallet.permitClient.permitFeeProxy();
+            await store.tokenWallet.permitFeeProxy();
             dispatch({type:'FEE_PROXY_APPROVED'});
         }
         catch(error){
