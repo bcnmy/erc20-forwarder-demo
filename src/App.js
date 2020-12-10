@@ -42,12 +42,16 @@ function App() {
         const wallet = provider.getSigner();
         const address = await wallet.getAddress();
         //note that the "token wallet factory method accepts a web3 provider"
-        const tokenWallet = TokenWallet.factory(walletModal);
+
+        const tokenWallet = await TokenWallet.factory(walletModal); 
         const balance = (parseFloat((await tokenWallet.token.balanceOf(address)).toString())/(Math.pow(10,18))).toFixed(2);
+        console.log('balance ' + balance);
         const transferHandlerApproved = await tokenWallet.transferHandlerApproved(address);
         const feeProxyApproved = await tokenWallet.feeProxyApproved(address);
+
         dispatch({type:'LOGIN', tokenWallet:tokenWallet, address:address, tokenBalance:balance, 
-                  transferHandlerApproved:transferHandlerApproved,feeProxyApproved:feeProxyApproved});
+            transferHandlerApproved:transferHandlerApproved,feeProxyApproved:feeProxyApproved});
+   
       }
       catch(error){
         console.log(error);
@@ -72,7 +76,7 @@ function App() {
     dispatch({type:'CANCEL_TX_MODAL'});
     dispatch({type:'LOADING'});
     try{
-      const txHash = await store.tokenWallet.sendTransferTx(store.transferTx);
+      const txHash = await store.tokenWallet.forwarderClient.sendTxEIP712(store.transferTx);
       const newBalance = (parseFloat((await store.tokenWallet.token.balanceOf(store.address)).toString())/(Math.pow(10,18))).toFixed(2);
       console.log(txHash);
       dispatch({type:'UPDATE_BALANCE',tokenBalance:newBalance});

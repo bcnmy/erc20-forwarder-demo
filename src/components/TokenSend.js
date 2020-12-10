@@ -22,14 +22,18 @@ function TokenSend({store,dispatch}){
     // This method calls tokenWallet.buildTransferTx
     const onSubmit = async(data) => {
         console.log("submitted");
-        const {tx,fee} = await store.tokenWallet.buildTransferTx(data.to,data.amount);
+        const builtTx = await store.tokenWallet.forwarderClient.buildTransferTx(store.tokenWallet.token.address,data.to,data.amount);
+        const tx = builtTx.request;
+        const fee = builtTx.cost;
+        console.log(tx);
+        console.log(fee);
         dispatch({type:'PROPOSE_TX',amount:data.amount, fee:fee, to:data.to, tx:tx});
     }
     
     const approveFeeProxy = async() => {
         dispatch({type:'LOADING'});
         try{
-            await store.tokenWallet.permitFeeProxy();
+            await store.tokenWallet.permitClient.permitFeeProxy();
             dispatch({type:'FEE_PROXY_APPROVED'});
         }
         catch(error){
